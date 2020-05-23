@@ -118,7 +118,7 @@
   </div>
 
   <div id="result" on>-</div>
-  <div id="extract"></div>
+  <div id="resAjax"></div>
 
   <div style="display: none;">
     <img id="webcamimg" src="Web%20QR_files/vid.png" onclick="setwebcam()" style="opacity: 1;" align="left">
@@ -157,6 +157,7 @@
             success : function(data) {
               console.log('ajax OK');
               // console.log(data);
+              $('#resAjax').text(data);
             },
             error : function(data) {
               console.log('ajax FAIL');
