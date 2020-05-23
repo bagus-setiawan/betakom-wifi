@@ -79,18 +79,24 @@
       height: 100%;
     }
 
-    /* #outdiv {
-      width: 320px;
-      height: 240px;
+    #outdiv {
+      width: 640px;
+      height: 480px;
       border: solid;
       border-width: 2px;
-    } */
+    }
 
     #result {
       border: solid;
       border-width: 1px;
       padding: 5px;
       width: 70%;
+    }
+    .card {
+      width: 40.5rem;
+    }
+    .card-header, .card-footer {
+      text-align: center;
     }
   </style>
 </head>
@@ -103,6 +109,7 @@
   </form> -->
 
   <div id="mainbody" class="container">
+    <div class="col d-flex justify-content-center">
     <div class="card">
       <div class="card-header">Cek Status Voucher</div>
       <!-- <div class="card-body">
@@ -110,17 +117,19 @@
           <video id="v" autoplay="autoplay"></video>
         </div>
       </div> -->
-      <div id="outdiv" class="card-body">
+      <div id="outdiv" class="card-body d-flex justify-content-center">
         <video id="v" autoplay="autoplay"></video>
       </div>
       <div class="card-footer">Scan <b>QR Code</b> dengan kamera</div>
+      <button id="reload-camera" type="button" class="btn btn-success">Reload Kamera</button>
+    </div>
     </div>
   </div>
 
-  <div id="result" on>-</div>
   <div id="resAjax"></div>
 
   <div style="display: none;">
+    <div id="result" on>-</div>
     <img id="webcamimg" src="Web%20QR_files/vid.png" onclick="setwebcam()" style="opacity: 1;" align="left">
     <img id="qrimg" src="Web%20QR_files/cam.png" onclick="setimg()" style="opacity: 0.2;" align="right">
   </div>
@@ -142,23 +151,27 @@
     $(document).ready(function () {
       load();
       $('body').on('DOMSubtreeModified', '#result', function () {
-        let urlQR = $('#result').text();
-        if (urlQR === '- scanning -') {
+        let qrURL = $('#result').text();
+        let targetURL = "get-status.php";
+        if (qrURL === '- scanning -') {
           console.log('ready');
         } else {
-          urlQR = $('#result b').text();
-          console.log(urlQR);
+          qrURL = $('#result b').text();
+          console.log('QR detected');
+          console.log(qrURL);
           window.navigator.vibrate([100,30,100,]);
           $.ajax({
-            url: "http://10.0.0.58/cek-voucher/get-status.php",
+            url:targetURL,
             // url: "cek.php",
             method: "POST",
-            data : {'data': urlQR},
+            data : {'data': qrURL},
             // dataType: "json",
             success : function(data) {
               console.log('ajax OK');
-              // console.log(data);
-              $('#resAjax').text(data);
+              console.log(data);
+              let xx = showResult(data);
+              console.log(xx);
+              $('#resAjax').append(xx);
             },
             error : function(data) {
               console.log('ajax FAIL');
@@ -167,7 +180,50 @@
           });
         }
       });
+      $('#reload-camera').click(function(){
+        location.reload(true);
+      })
     });
+
+    function showResult(data) {
+      let user = data['user'];
+      let row1msg = (user['limit-uptime'] == '1s') ? 'Voucher sudah tidak berlaku' : 'Voucher masih bisa digunakan';
+      let opTbl = '<table class="table table-sm">';
+      let clTbl = '</table>';
+      let row1 = '<tr> \
+                    <th>Status</td> \
+                    <td>:</td> \
+                    <td>'+ row1msg +'</td> \
+                  </tr>';
+      let row2 = '<tr> \
+                    <th>Voucher</td> \
+                    <td>:</td> \
+                    <td>'+ user['name'] +'</td> \
+                  </tr>';
+      if (user['limit-uptime'] == '1s') {
+        let row3 = '<tr> \
+                      <th>Voucher</td> \
+                      <td>:</td> \
+                      <td>'+ user['mac-address'] +'</td> \
+                    </tr>';
+
+        return (opTbl + row1 + row2 + row3 + clTbl);
+      }
+
+      return (opTbl + row1 + row2 + clTbl);
+      // $result[0]["server"]=>
+      // $result[0]["password"]=>
+      // $result[0]["profile"]=>
+      // $result[0]["limit-uptime"]=>
+      // $result[0]["limit-bytes-total"]=>
+      // $result[0]["uptime"]=>
+      // $result[0]["bytes-in"]=>
+      // $result[0]["bytes-out"]=>
+      // $result[0]["packets-in"]=>
+      // $result[0]["packets-out"]=>
+      // $result[0]["dynamic"]=>
+      // $result[0]["disabled"]=>
+    }
   </script>
 </body>
 
