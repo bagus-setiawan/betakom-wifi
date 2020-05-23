@@ -149,7 +149,7 @@
           urlQR = $('#result b').text();
           console.log(urlQR);
           $.ajax({
-            url: "get-status.php",
+            url: "http://10.0.0.58/cek-voucher/get-status.php",
             // url: "cek.php",
             method: "POST",
             data : {'data': urlQR},
