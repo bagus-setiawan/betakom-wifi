@@ -152,7 +152,7 @@
       load();
       $('body').on('DOMSubtreeModified', '#result', function () {
         let qrURL = $('#result').text();
-        let targetURL = "get-status.php";
+        let targetURL = "http://10.0.0.58/cek-voucher/get-status.php";
         if (qrURL === '- scanning -') {
           console.log('ready');
         } else {
