@@ -148,6 +148,7 @@
         } else {
           urlQR = $('#result b').text();
           console.log(urlQR);
+          window.navigator.vibrate([100,30,100,]);
           $.ajax({
             url: "http://10.0.0.58/cek-voucher/get-status.php",
             // url: "cek.php",
